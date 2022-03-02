@@ -1,13 +1,13 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import CalcPad from './CalcPad.vue'
 import CalcDisplay from './CalcDisplay.vue'
 import CalcHeader from './CalcHeader.vue'
 /* eslint-disable-next-line */
 const input = ref('0')
 const result = ref(0)
-watch(input, () => console.log(input))
-watch(result, () => console.log(result))
+// watch(input, () => console.log(input))
+// watch(result, () => console.log(result))
 </script>
 <template>
   <div class="calc">

@@ -1,58 +1,44 @@
 <script setup>
 import { ref, reactive, defineEmits, watch } from 'vue'
+import { padVal } from './padVal'
 
-const padItems = reactive([
-  { item: 'AC', iconName: 'AC' },
-  { item: 'delete-left', iconName: 'delete-left', icon: true },
-  { item: '%', iconName: 'percent', icon: true, symbol: true },
-  { item: '/', iconName: 'divide', icon: true, symbol: true },
-  { item: 7 },
-  { item: 8 },
-  { item: 9 },
-  { item: '*', iconName: 'xmark', icon: true, symbol: true },
-  { item: 4 },
-  { item: 5 },
-  { item: 6 },
-  { item: '-', iconName: 'minus', icon: true, symbol: true },
-  { item: 1 },
-  { item: 2 },
-  { item: 3 },
-  { item: '+', iconName: 'plus', icon: true, symbol: true },
-  { item: '+/-',  iconName: 'plus-minus', icon: true },
-  { item: 0 },
-  { item: '.' },
-  { item: '=', iconName: 'equals', icon: true, symbol: true }
-])
-const numberEntered = ref('0')
-const sign = reactive([])
-const input = reactive([])
-const result = ref()
 const emits = defineEmits(['update-value', 'result-value'])
+
+const padItems = reactive(padVal)
+const input = reactive([])
+const symbols = ['+', '-', '*', '/']
+const buffer = ref('0')
+const result = ref(0)
 const displayValue = ref('')
 const clear = ref(false)
 
 watch(displayValue, () => {
   emits('update-value', displayValue.value)
 })
+watch(result, () => {
+  emits('result-value', result.value)
+})
+watch(input, () => {
+  console.log({ input })
+  console.log(input.length)
+})
 
-const enterNumber = (value) => {
+const processInput = (value) => {
   if (value === 'AC') { 
     resetInput()
     return
   }
   if (value === '=') { 
     clear.value = true
-    selectSign('=')
+    calculate()
     return
   }
-  if (clear.value === true) {
-    resetInput()
-  }
+  if (clear.value === true) resetInput()
   if (value == 'delete-left') {
-    if(numberEntered.value === 0) {
+    if(!buffer.value) {
       input.pop()
     } else {
-      numberEntered.value = numberEntered.value.slice(0, -1)
+      buffer.value = buffer.value.slice(0, -1)
       displayValue.value = displayValue.value.substring(0, 
         displayValue.value.length - 1)
       emits('update-value', displayValue.value)
@@ -62,77 +48,75 @@ const enterNumber = (value) => {
     return
   }
   clear.value = false
-  if ([1,2,3,4,5,6,7,8,9,0].includes(value)) {
-    numberEntered.value = numberEntered.value === '0'
+  if ([1,2,3,4,5,6,7,8,9,0,'+/-','.'].includes(value)) {
+    if(value === '+/-') {
+      buffer.value = togglePlusMinus(buffer.value)
+      return
+    }
+    if (value === '.') {
+      buffer.value = !buffer.value.includes('.')
+        ? buffer.value = buffer.value + '.' 
+        : null
+    }
+    buffer.value = !buffer.value
       ? String(value)
-      : numberEntered.value + String(value)
-    // console.log(numberEntered.value)
+      : buffer.value + String(value)
     displayValue.value = displayValue.value + String(value)
-    emits('update-value', displayValue.value)
-    if (input.length > 0) calculate()
+    if (input.length > 1) calculate()
   }
   else {
-    input.push(Number(numberEntered.value))
+    input.push(Number(buffer.value))
+    if (symbols.includes(value)) input.push(value)
     displayValue.value = displayValue.value + value
-    emits('update-value', displayValue.value)
-    // result.value = result.value === 0
-    //   ? Number(numberEntered.value)
-    //   : result.value
-    sign.push(value)
     if (value === 'percent') {
-      selectSign(value)
+      useSign(value)
       clear.value = true
     }
-    numberEntered.value = '0'
+    buffer.value = '0'
   }
+}
+
+const togglePlusMinus = (current) => {
+  const toggle =  current.split('')
+  toggle.includes('-')
+    ? toggle.shift()
+    : toggle.unshift('-')
+  return toggle.join()
 }
 
 const resetInput = () => {
-  numberEntered.value = '0'
+  buffer.value = ''
   displayValue.value = ''
   input.splice(0, input.length)
-  result.value = null
+  result.value = 0
   emits('update-value', '0')
   emits('result-value', 0)
-  // console.log(numberEntered.value)
-  // console.log(input.value)
 }
 
 const calculate = () => {
-  const lastInput = Number(input[input.length - 1])
-  const lastSign = sign[sign.length - 1]
-  const currentInput = Number(numberEntered.value)
-  if(!result.value) {
-    selectSign(lastSign, lastInput, currentInput)
-  } else {
-    selectSign(lastSign, result.value, currentInput)
-  }
-}
-
-const selectSign = (sign, val1, val2) => {
-  switch(sign) {
-    case '%':
-      result.value = Number(val1) / 100
-      break
-    case '/': 
-      result.value = val1 / val2
-      break
-    case '*': 
-      result.value = val1 * val2
-      break
-    case '-': 
-      result.value = val1 - val2
-      break
-    case '+': 
-      result.value = val1 + val2
-      break
-    case '=': 
-      emits('result-value', result.value)
-      break
-    default:
+  // if(input.length < 2 && buffer.value === 0) return
+  result.value = input[0]
+  for(let i = 1; i < input.length - 1; i = i + 2) {
+    console.log(input[i+1])
+    result.value = useSign(input[i], result.value, input[i+1] || buffer.value)
   }
   emits('result-value', result.value)
-  // console.log(result.value)
+}
+
+const useSign = (sign, acc, val) => {
+  switch(sign) {
+    case '%':
+      return acc / 100
+    case '/': 
+      return acc / val
+    case '*': 
+      return acc * val
+    case '-': 
+      return acc - val
+    case '+': 
+      return acc + val
+    default:
+  }
 }
 </script>
 <template>
@@ -142,7 +126,7 @@ const selectSign = (sign, val1, val2) => {
       :key="val.item"
       class="pads"
       :class="{ symbols: val.symbol}"
-      @click="enterNumber(val.item)"
+      @click="processInput(val.item)"
     >
       <fa v-if="val.icon" :icon="val.iconName" />
       {{ !val.icon ? val.item : null }}

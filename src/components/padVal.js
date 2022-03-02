@@ -1,0 +1,22 @@
+export const padVal = [
+  { item: 'AC', iconName: 'AC' },
+  { item: 'delete-left', iconName: 'delete-left', icon: true },
+  { item: '%', iconName: 'percent', icon: true, symbol: true },
+  { item: '/', iconName: 'divide', icon: true, symbol: true },
+  { item: 7 },
+  { item: 8 },
+  { item: 9 },
+  { item: '*', iconName: 'xmark', icon: true, symbol: true },
+  { item: 4 },
+  { item: 5 },
+  { item: 6 },
+  { item: '-', iconName: 'minus', icon: true, symbol: true },
+  { item: 1 },
+  { item: 2 },
+  { item: 3 },
+  { item: '+', iconName: 'plus', icon: true, symbol: true },
+  { item: '+/-',  iconName: 'plus-minus', icon: true },
+  { item: 0 },
+  { item: '.' },
+  { item: '=', iconName: 'equals', icon: true, symbol: true }
+]
