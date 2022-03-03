@@ -19,19 +19,20 @@ const { firstDisplay, secondDisplay } = toRefs(props)
 <style scoped>
 .calc-display{
   text-align: right;
-  padding: 40px 10px;
+  padding: 30px 10px 10px 10px;
 }
 .input-display {
-  min-height: 30px;
+  height: 50px;
   width: 100%;
   overflow-wrap: break-word;
+  overflow-y: scroll;
   color: #2f2f2f;
-  border: 1px solid red;
 }
 .result-display {
-  min-height: 60px;
+  height: 90px;
   width: 100%;
-  font-size: 40px;
-  border: 1px solid green;
+  overflow-wrap: break-word;
+  overflow-y: scroll;
+  font-size: 35px;
 }
 </style>

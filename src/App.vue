@@ -16,9 +16,10 @@ import Calculator from './components/Calculator.vue'
 html, body {
   margin: 0;
   padding: 0;
+  background: #f5f5f5;
 }
 #app {
-  font-family: 'Akaya Telivigala', cursive;
+  font-family: 'Verdana', sans-serif;
   /* font-family: Avenir, Helvetica, Arial, sans-serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -32,26 +33,27 @@ html, body {
   position: relative;
   padding-top: 60px;
   background: #f5f5f5;
-  min-height: 100vh;
+  max-height: 100vh;
+  min-width: 100vw;
 }
 .app::before {
   position: absolute;
   content: "";
-  width: 80vw;
-  height: 80vw;
+  width: 600px;
+  height: 600px;
   border-radius: 50%;
-  top: -30%;
-  right: -30%;
+  top: -300px;
+  right: -400px;
   background: #029688;
 }
 .app::after {
   position: absolute;
   content: "";
-  width: 80vw;
-  height: 80vw;
+  width: 600px;
+  height: 600px;
   border-radius: 50%;
-  bottom: -30%;
-  left: -30%;
+  bottom: -400px;
+  left: -300px;
   background: #283637;
 }
 </style>

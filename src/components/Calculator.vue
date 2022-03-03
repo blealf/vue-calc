@@ -15,7 +15,10 @@ const result = ref(0)
     <div style="z-index:99;">
       <CalcHeader />
       <CalcDisplay :first-display="input" :second-display="result" />
-      <CalcPad @update-value="input = $event" @result-value="result = $event || 0" />
+      <CalcPad 
+        @update-value="input = $event || '0'"
+        @result-value="result = $event || 0"
+      />
     </div>
   </div>
 </template>
@@ -25,7 +28,7 @@ const result = ref(0)
   position: relative;
   z-index: 2;
   height: 480px;
-  /* background: #2f2f2f; */
+  background: #00c2c2;
   margin: 0 auto;
   overflow: hidden;
   width: 210px;
@@ -45,6 +48,7 @@ const result = ref(0)
   border-bottom-right-radius: 25px;
   /* box-shadow: 0 0 0 500px teal; */
   box-shadow: 1px -5px 5px 1px rgba(211, 211, 213, 0.3) inset;
+  background: teal;
   /* box-shadow: 1px -5px 5px 251px rgba(211, 211, 213); */
   /* -webkit-mask-image: url('.././assets/svg/notch.svg');
   mask-type: white;
@@ -60,6 +64,7 @@ const result = ref(0)
   bottom: 4px;
   left: 30%;
   border-radius: 3px;
+  background: teal;
 }
 svg {
   width: 300px;

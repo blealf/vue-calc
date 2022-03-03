@@ -41,7 +41,7 @@ const changeState = () => {
 .calc-header{
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 5px;
   font-size: 14px;
   margin-top: 5px;
 }
