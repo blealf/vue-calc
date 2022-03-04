@@ -1,23 +1,22 @@
 <script setup>
-import { defineProps, toRefs } from 'vue'
+import { defineProps, toRefs } from "vue";
 
 const props = defineProps({
-  firstDisplay: String,
-  secondDisplay: Number
-})
+  inputDisplay: String,
+  resultDisplay: Number,
+});
 
-const { firstDisplay, secondDisplay } = toRefs(props)
-
+const { inputDisplay, resultDisplay } = toRefs(props);
 </script>
 <template>
   <div class="calc-display">
-    <div class="input-display">{{ firstDisplay }}</div>
-    <div class="result-display">{{ secondDisplay }}</div>
+    <div class="input-display">{{ inputDisplay }}</div>
+    <div class="result-display">{{ resultDisplay }}</div>
   </div>
 </template>
 
 <style scoped>
-.calc-display{
+.calc-display {
   text-align: right;
   padding: 30px 10px 10px 10px;
 }

@@ -1,24 +1,177 @@
 <script setup>
-import { ref } from 'vue'
-import CalcPad from './CalcPad.vue'
-import CalcDisplay from './CalcDisplay.vue'
-import CalcHeader from './CalcHeader.vue'
-/* eslint-disable-next-line */
-const input = ref('0')
-const result = ref(0)
-// watch(input, () => console.log(input))
-// watch(result, () => console.log(result))
+import { ref, watch, reactive } from "vue";
+import CalcHeader from "./CalcHeader.vue";
+import CalcDisplay from "./CalcDisplay.vue";
+import CalcPad from "./CalcPad.vue";
+
+const symbols = ["+", "-", "*", "/"];
+const buffer = ref("");
+const result = ref(0);
+const screenResult = ref(0);
+const screenInput = ref("");
+const inputStack = reactive([]);
+
+watch(buffer, () => {
+  updateScreenInput();
+});
+watch(result, () => {
+  screenResult.value =
+    String(result.value).length > 8
+      ? result.value.toPrecision(3)
+      : result.value;
+  console.log(screenResult);
+});
+
+const updateScreenInput = () => {
+  screenInput.value =
+    inputStack.length > 0
+      ? inputStack.join().replace(/,/g, "") + buffer.value
+      : buffer.value;
+};
+
+const processInputStack = (value) => {
+  if (value === "AC") {
+    resetInputStack();
+    return;
+  }
+  if (value === "=") {
+    processEquals();
+    return;
+  }
+  if (value == "delete-left") {
+    processDelete();
+    return;
+  }
+  if ([1, 2, 3, 4, 5, 6, 7, 8, 9, 0, "+/-", ".", "%"].includes(value)) {
+    processNumerics(value);
+  } else {
+    processSymbols(value);
+  }
+};
+
+const processNumerics = (value) => {
+  if (
+    buffer.value === "" &&
+    String(inputStack[inputStack.length - 1]).includes("%")
+  )
+    return;
+  switch (value) {
+    case "%":
+      if (!buffer.value || buffer.value.includes(value)) return;
+      inputStack.push(buffer.value + value);
+      result.value =
+        inputStack.length === 0 && result.value === 0
+          ? calculatePercent(inputStack[inputStack.length - 1])
+          : result.value;
+      calculate();
+      buffer.value = "";
+      break;
+    case ".":
+      buffer.value = !buffer.value.includes(value)
+        ? buffer.value + "."
+        : buffer.value;
+      break;
+    case "+/-":
+      buffer.value = buffer.value.includes("-")
+        ? buffer.value.substring(1, buffer.value.length)
+        : "-" + buffer.value;
+      calculate();
+      break;
+    default:
+      buffer.value = !buffer.value
+        ? String(value)
+        : buffer.value + String(value);
+      if (inputStack.length > 1) calculate();
+  }
+};
+
+const processSymbols = (value) => {
+  if (buffer.value !== "") {
+    inputStack.push(buffer.value);
+    buffer.value = "";
+  }
+  if (symbols.includes(inputStack[inputStack.length - 1])) {
+    inputStack.pop();
+    inputStack.push(value);
+  } else if (symbols.includes(value) && inputStack.length > 0)
+    inputStack.push(value);
+};
+
+const processDelete = () => {
+  if (!buffer.value && !inputStack.length) return;
+  if (!buffer.value) {
+    if (inputStack[inputStack.length - 1].length > 1) {
+      buffer.value = inputStack[inputStack.length - 1];
+      inputStack.pop();
+    } else {
+      inputStack.pop();
+      buffer.value = inputStack.pop();
+    }
+  } else {
+    buffer.value = buffer.value.slice(0, -1);
+  }
+  calculate();
+};
+
+const processEquals = () => {
+  let extract = result.value;
+  resetInputStack();
+  buffer.value = extract === Infinity ? "" : String(extract);
+  result.value = extract;
+};
+
+const resetInputStack = () => {
+  result.value = 0;
+  buffer.value = "";
+  screenInput.value = "0";
+  inputStack.splice(0, inputStack.length);
+};
+
+const calculate = () => {
+  result.value = calculatePercent(inputStack[0] || buffer.value);
+  if (inputStack.length === 1) return;
+  for (let i = 1; i < inputStack.length; i = i + 2) {
+    result.value = useSign(
+      inputStack[i],
+      result.value,
+      inputStack[i + 1] !== undefined
+        ? calculatePercent(inputStack[i + 1])
+        : calculatePercent(buffer.value)
+    );
+  }
+};
+
+const calculatePercent = (value) => {
+  return value?.includes("%")
+    ? useSign("%", Number(value.substring(0, value.length - 1)))
+    : Number(value);
+};
+
+const useSign = (sign, acc, val) => {
+  switch (sign) {
+    case "%":
+      return acc / 100;
+    case "/":
+      return acc / val;
+    case "*":
+      return acc * val;
+    case "-":
+      return acc - val;
+    case "+":
+      return acc + val;
+    default:
+  }
+};
 </script>
 <template>
   <div class="calc">
-    <!-- <Notch /> -->
-    <div style="z-index:99;">
+    <div style="z-index: 99">
       <CalcHeader />
-      <CalcDisplay :first-display="input" :second-display="result" />
-      <CalcPad 
-        @update-value="input = $event || '0'"
-        @result-value="result = $event || 0"
+      <CalcDisplay
+        :input-display="screenInput || '0'"
+        :result-display="screenResult"
       />
+      <CalcPad @update-value="processInputStack($event)" />
     </div>
   </div>
 </template>
@@ -53,7 +206,6 @@ const result = ref(0)
   /* -webkit-mask-image: url('.././assets/svg/notch.svg');
   mask-type: white;
   mask-type: alpha; */
-
 }
 .calc::after {
   position: absolute;
