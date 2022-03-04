@@ -1,7 +1,5 @@
-<script setup>
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import Calculator from './components/Calculator.vue'
+<script setup lang="ts">
+import Calculator from "./components/Calculator.vue";
 </script>
 
 <template>
@@ -12,14 +10,15 @@ import Calculator from './components/Calculator.vue'
 </template>
 
 <style>
-@import url('https://fontsgoogleapis.com/css2?family=Akaya+Telivigala&display=swap');
-html, body {
+@import url("https://fontsgoogleapis.com/css2?family=Akaya+Telivigala&display=swap");
+html,
+body {
   margin: 0;
   padding: 0;
   background: #f5f5f5;
 }
 #app {
-  font-family: 'Verdana', sans-serif;
+  font-family: "Verdana", sans-serif;
   /* font-family: Avenir, Helvetica, Arial, sans-serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
