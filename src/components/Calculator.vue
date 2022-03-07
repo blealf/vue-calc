@@ -1,8 +1,10 @@
 <script setup>
-import { ref, watch, reactive } from "vue";
+import { ref, watch, reactive, defineEmits, defineProps } from "vue";
 import CalcHeader from "./CalcHeader.vue";
 import CalcDisplay from "./CalcDisplay.vue";
 import CalcPad from "./CalcPad.vue";
+
+const props = defineProps(["theme"]);
 
 const symbols = ["+", "-", "*", "/"];
 const buffer = ref("");
@@ -10,6 +12,7 @@ const result = ref(0);
 const screenResult = ref(0);
 const screenInput = ref("");
 const inputStack = reactive([]);
+const emits = defineEmits(["selected-theme"]);
 
 watch(buffer, () => {
   updateScreenInput();
@@ -166,7 +169,10 @@ const useSign = (sign, acc, val) => {
 <template>
   <div class="calc">
     <div style="z-index: 99">
-      <CalcHeader />
+      <CalcHeader
+        @selected-theme="emits('selected-theme', $event)"
+        :theme="props.theme"
+      />
       <CalcDisplay
         :input-display="screenInput || '0'"
         :result-display="screenResult"
@@ -181,19 +187,19 @@ const useSign = (sign, acc, val) => {
   position: relative;
   z-index: 2;
   height: 480px;
-  background: #00c2c2;
+  background: var(--calc-background-color);
   margin: 0 auto;
   overflow: hidden;
   width: 210px;
   padding: 25px 10px;
   border-radius: 25px;
-  box-shadow: 1px 1px 25px 5px rgba(43, 43, 43, 0.3);
+  box-shadow: 1px 1px 25px 5px var(--shadow-color);
 }
 .calc::before {
   position: absolute;
   content: "";
   width: 70%;
-  height: 25px;
+  height: 15px;
   background: transparent;
   top: 0;
   left: 15%;
@@ -201,7 +207,7 @@ const useSign = (sign, acc, val) => {
   border-bottom-right-radius: 25px;
   /* box-shadow: 0 0 0 500px teal; */
   box-shadow: 1px -5px 5px 1px rgba(211, 211, 213, 0.3) inset;
-  background: teal;
+  background: var(--calc-header-color);
   /* box-shadow: 1px -5px 5px 251px rgba(211, 211, 213); */
   /* -webkit-mask-image: url('.././assets/svg/notch.svg');
   mask-type: white;
@@ -216,7 +222,7 @@ const useSign = (sign, acc, val) => {
   bottom: 4px;
   left: 30%;
   border-radius: 3px;
-  background: teal;
+  background: var(--calc-header-color);
 }
 svg {
   width: 300px;

@@ -25,7 +25,7 @@ const { inputDisplay, resultDisplay } = toRefs(props);
   width: 100%;
   overflow-wrap: break-word;
   overflow-y: scroll;
-  color: #2f2f2f;
+  color: var(--font-color);
 }
 .result-display {
   height: 90px;
@@ -33,5 +33,6 @@ const { inputDisplay, resultDisplay } = toRefs(props);
   overflow-wrap: break-word;
   overflow-y: scroll;
   font-size: 35px;
+  color: var(--font-color);
 }
 </style>

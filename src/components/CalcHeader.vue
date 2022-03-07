@@ -1,36 +1,42 @@
 <script setup>
-import  { ref , computed } from 'vue'
-const theme = ref('light')
-const state = ref('calculator')
+import { ref, computed, defineProps, defineEmits } from "vue";
 
-const isLight = computed(() => 
-  theme.value === 'light' ? true : false
-)
+const props = defineProps(["theme"]);
 
-const changeState = () => {
-  state.value = state.value === 'calculator' ? 'converter' : 'calculator'
-}
+const mode = ref("calculator");
+const emits = defineEmits(["selected-theme"]);
+
+// NB: don't necessary need this but will leave for now
+const isLight = computed(() => (props.theme === "light" ? true : false));
+
+const changeMode = (modeName) => {
+  mode.value = modeName;
+};
+
+const toggleTheme = () => {
+  emits("selected-theme", props.theme === "light" ? "dark" : "light");
+};
 </script>
 <template>
   <div class="calc-header">
     <button class="calc-menu">
       <fa icon="bars" />
     </button>
-    <div 
-      class="chooser" 
-      :class="{ highlight: state === 'calculator' }"
-      @click="changeState"
+    <div
+      class="chooser"
+      :class="{ highlight: mode === 'calculator' }"
+      @click="changeMode('calculator')"
     >
       Calculator
     </div>
-    <div 
-      class="chooser" 
-      :class="{ highlight: state === 'converter' }"
-      @click="changeState"
+    <div
+      class="chooser"
+      :class="{ highlight: mode === 'converter' }"
+      @click="changeMode('converter')"
     >
       Converter
     </div>
-    <button class="theme-switcher">
+    <button class="theme-switcher" @click="toggleTheme">
       <fa v-if="isLight" icon="moon" />
       <fa v-else icon="sun" />
     </button>
@@ -38,17 +44,19 @@ const changeState = () => {
 </template>
 
 <style scoped>
-.calc-header{
+.calc-header {
   display: flex;
   justify-content: space-between;
   gap: 5px;
   font-size: 14px;
   margin-top: 5px;
 }
-.calc-menu, .theme-switcher {
+.calc-menu,
+.theme-switcher {
   border: 0 transparent;
   background: transparent;
   cursor: pointer;
+  color: var(--font-color);
 }
 .calc-menu {
   margin-right: auto;
@@ -61,6 +69,7 @@ const changeState = () => {
   border-radius: 15px;
   padding: 2px 10px;
   cursor: pointer;
+  color: var(--font-color);
 }
 .highlight {
   background: teal;
