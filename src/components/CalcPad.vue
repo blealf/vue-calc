@@ -1,17 +1,16 @@
-<script setup>
-import { ref, reactive, defineEmits, onMounted } from "vue";
+<script setup lang="ts">
+import { reactive, defineEmits, onMounted } from "vue";
 import { padVal } from "./padVal";
 
 const emits = defineEmits(["update-value"]);
 
 const padItems = reactive(padVal);
 const sendableKeys = padItems.map((i) => String(i.item));
-const keypads = ref([]);
-const sendInput = (val) => {
+const sendInput = (val: string | number) => {
   emits("update-value", val);
 };
 
-const sendKeyboardInput = (e) => {
+const sendKeyboardInput = (e: any) => {
   if (sendableKeys.indexOf(e.key) !== -1) {
     console.log(e.key);
     emits("update-value", e.key);
@@ -27,7 +26,6 @@ onMounted(() => {
     <button
       v-for="val in padItems"
       :key="val.item"
-      ref="keypads"
       class="pads"
       :class="{ symbols: val.symbol }"
       @click="sendInput(val.item)"

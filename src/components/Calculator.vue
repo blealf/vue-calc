@@ -8,8 +8,8 @@ const props = defineProps(["theme"]);
 
 const symbols = ["+", "-", "*", "/"];
 const buffer = ref<string>("");
-const result = ref<number>(0);
-const screenResult = ref<number | string>(0);
+const result = ref<number | any>(0);
+const screenResult = ref<number>(0);
 const screenInput = ref<string>("");
 const inputStack = reactive<any[]>([]);
 const emits = defineEmits(["selected-theme"]);
@@ -176,7 +176,7 @@ const useSign = (sign: string, acc: number, val: number = 0) => {
       />
       <CalcDisplay
         :input-display="screenInput || '0'"
-        :result-display="screenResult"
+        :result-display="screenResult || 0"
       />
       <CalcPad @update-value="processInputStack($event)" />
     </div>
@@ -201,7 +201,6 @@ const useSign = (sign: string, acc: number, val: number = 0) => {
   content: "";
   width: 70%;
   height: 15px;
-  background: transparent;
   top: 0;
   left: 15%;
   border-bottom-left-radius: 25px;

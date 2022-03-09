@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, defineProps, defineEmits } from "vue";
 
 const props = defineProps(["theme"]);
@@ -9,7 +9,7 @@ const emits = defineEmits(["selected-theme"]);
 // NB: don't necessary need this but will leave for now
 const isLight = computed(() => (props.theme === "light" ? true : false));
 
-const changeMode = (modeName) => {
+const changeMode = (modeName: string) => {
   mode.value = modeName;
 };
 
@@ -60,6 +60,7 @@ const toggleTheme = () => {
 }
 .calc-menu {
   margin-right: auto;
+  cursor: crosshair;
 }
 .theme-switcher {
   margin-left: auto;

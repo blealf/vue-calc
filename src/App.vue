@@ -36,6 +36,9 @@ watch(theme, () => {
   --calc-header-color: #008080;
   --shadow-color: rgba(207, 207, 207, 0.3);
 }
+* {
+  transition: background 0.5s ease-in-out;
+}
 html,
 body {
   margin: 0;
