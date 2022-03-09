@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, watch, reactive, defineEmits, defineProps } from "vue";
 import CalcHeader from "./CalcHeader.vue";
 import CalcDisplay from "./CalcDisplay.vue";
@@ -7,11 +7,11 @@ import CalcPad from "./CalcPad.vue";
 const props = defineProps(["theme"]);
 
 const symbols = ["+", "-", "*", "/"];
-const buffer = ref("");
-const result = ref(0);
-const screenResult = ref(0);
-const screenInput = ref("");
-const inputStack = reactive([]);
+const buffer = ref<string>("");
+const result = ref<number>(0);
+const screenResult = ref<number | string>(0);
+const screenInput = ref<string>("");
+const inputStack = reactive<any[]>([]);
 const emits = defineEmits(["selected-theme"]);
 
 watch(buffer, () => {
@@ -19,7 +19,7 @@ watch(buffer, () => {
 });
 watch(result, () => {
   screenResult.value =
-    String(result.value).length > 8
+    result.value.toString().length > 8
       ? result.value.toPrecision(3)
       : result.value;
   console.log(screenResult);
@@ -32,7 +32,7 @@ const updateScreenInput = () => {
       : buffer.value;
 };
 
-const processInputStack = (value) => {
+const processInputStack = (value: string) => {
   if (value === "AC") {
     resetInputStack();
     return;
@@ -52,7 +52,7 @@ const processInputStack = (value) => {
   }
 };
 
-const processNumerics = (value) => {
+const processNumerics = (value: string) => {
   if (
     buffer.value === "" &&
     String(inputStack[inputStack.length - 1]).includes("%")
@@ -64,7 +64,7 @@ const processNumerics = (value) => {
       inputStack.push(buffer.value + value);
       result.value =
         inputStack.length === 0 && result.value === 0
-          ? calculatePercent(inputStack[inputStack.length - 1])
+          ? calculatePercent(inputStack[inputStack.length - 1]) || 0
           : result.value;
       calculate();
       buffer.value = "";
@@ -88,7 +88,7 @@ const processNumerics = (value) => {
   }
 };
 
-const processSymbols = (value) => {
+const processSymbols = (value: string) => {
   if (buffer.value !== "") {
     inputStack.push(buffer.value);
     buffer.value = "";
@@ -131,26 +131,27 @@ const resetInputStack = () => {
 };
 
 const calculate = () => {
-  result.value = calculatePercent(inputStack[0] || buffer.value);
+  result.value = calculatePercent(inputStack[0] || buffer.value) || 0;
   if (inputStack.length === 1) return;
   for (let i = 1; i < inputStack.length; i = i + 2) {
-    result.value = useSign(
-      inputStack[i],
-      result.value,
-      inputStack[i + 1] !== undefined
-        ? calculatePercent(inputStack[i + 1])
-        : calculatePercent(buffer.value)
-    );
+    result.value =
+      useSign(
+        inputStack[i],
+        result.value,
+        inputStack[i + 1] !== undefined
+          ? calculatePercent(inputStack[i + 1])
+          : calculatePercent(buffer.value)
+      ) || 0;
   }
 };
 
-const calculatePercent = (value) => {
+const calculatePercent = (value: string) => {
   return value?.includes("%")
     ? useSign("%", Number(value.substring(0, value.length - 1)))
     : Number(value);
 };
 
-const useSign = (sign, acc, val) => {
+const useSign = (sign: string, acc: number, val: number = 0) => {
   switch (sign) {
     case "%":
       return acc / 100;
