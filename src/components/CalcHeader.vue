@@ -23,6 +23,7 @@ const toggleTheme = () => {
       <fa icon="bars" />
     </button>
     <div
+      id="calculator"
       class="chooser"
       :class="{ highlight: mode === 'calculator' }"
       @click="changeMode('calculator')"
@@ -30,6 +31,7 @@ const toggleTheme = () => {
       Calculator
     </div>
     <div
+      id="converter"
       class="chooser"
       :class="{ highlight: mode === 'converter' }"
       @click="changeMode('converter')"
